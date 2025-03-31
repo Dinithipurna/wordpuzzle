@@ -1,0 +1,99 @@
+body {
+    font-family: Arial, sans-serif;
+    text-align: center;
+    background-color: #f0f0f0;
+  }
+  
+  .container {
+    max-width: 600px;
+    margin: 50px auto;
+    padding: 20px;
+    background-color: white;
+    border-radius: 10px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  }
+  
+  h1 {
+    color: #333;
+  }
+  
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(10, 40px); /* Adjust grid size (10 columns in this case) */
+    grid-gap: 2px;
+    margin: 20px 0;
+  }
+  
+  .grid div {
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #e0e0e0;
+    font-size: 20px;
+    border-radius: 5px;
+  }
+  
+  .grid div.highlight-box {
+    border: 3px solid #ffeb3b; /* Box highlight color */
+    box-sizing: border-box;
+  }
+  
+  
+  .selected-word {
+    margin-top: 10px;
+    font-size: 20px;
+  }
+  
+  .word-list {
+    margin-top: 20px;
+    font-size: 18px;
+    color: #555;
+  }
+
+  .highlight {
+    background-color: yellow;
+    font-weight: bold;
+  }
+  .highlight-first-letter {
+    background-color: yellow;
+} 
+
+#top-panel {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 10px;
+    font-size: 18px;
+    font-weight: bold;
+  }
+  
+  #timer {
+    color: #e53935;
+  }
+
+  .setup {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(240, 240, 240, 0.95);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    font-family: Arial;
+    z-index: 999;
+  }
+  
+  .setup input, .setup select {
+    font-size: 16px;
+    padding: 4px;
+    margin: 5px;
+  }
+
+/* #webgazerVideoContainer {
+    display: none !important;
+} */
+  

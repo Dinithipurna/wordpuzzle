@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Word Puzzle</title>
+  <link rel="stylesheet" href="styles.css">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Arial', sans-serif;
+      background-color: #f0f4f8;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+    }
+
+    .container {
+      background-color: #fff;
+      padding: 30px;
+      border-radius: 15px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+      text-align: center;
+      width: 80%;
+      max-width: 600px;
+    }
+
+    h1 {
+      font-size: 32px;
+      color: #333;
+      margin-bottom: 20px;
+    }
+
+    #score-panel {
+      font-size: 18px;
+      color: #333;
+      margin-bottom: 20px;
+    }
+
+    #timer {
+      font-size: 18px;
+      color: #333;
+      margin-bottom: 20px;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(10, 40px);
+      grid-gap: 5px;
+      justify-content: center;
+      margin-bottom: 20px;
+    }
+
+    .grid div {
+      width: 40px;
+      height: 40px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-size: 20px;
+      font-weight: bold;
+      background-color: #f1f1f1;
+      border: 1px solid #ddd;
+      border-radius: 5px;
+      cursor: pointer;
+      transition: background-color 0.3s;
+    }
+
+    .grid div.selected {
+      background-color: #81c784;
+      color: white;
+    }
+
+    .grid div.highlight {
+      background-color: #ffeb3b;
+      color: #333;
+    }
+
+    button {
+      background-color: #4CAF50;
+      color: white;
+      font-size: 16px;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 5px;
+      cursor: pointer;
+      transition: background-color 0.3s;
+    }
+
+    button:hover {
+      background-color: #45a049;
+    }
+
+    #found-words {
+      margin-top: 20px;
+      text-align: left;
+    }
+
+    #found-words h2 {
+      font-size: 20px;
+      color: #333;
+      margin-bottom: 10px;
+    }
+
+    #found-words-list {
+      list-style-type: none;
+      padding: 0;
+    }
+
+    #found-words-list li {
+      font-size: 18px;
+      color: #333;
+      margin-bottom: 5px;
+    }
+
+    #word-list {
+      margin-top: 10px;
+      font-size: 16px;
+      color: #333;
+    }
+
+    #selected-word {
+      font-size: 18px;
+      font-weight: bold;
+      color: #333;
+      margin-bottom: 10px;
+    }
+  </style>
+</head>
+<body>
+    <div id="setup-screen" class="setup">
+        <h2>Start Puzzle Game</h2>
+        <label>Participant ID: <input type="text" id="participant-id" /></label><br><br>
+        <label>Type:</label>
+        <select id="hint-type">
+          <option value="concrete">Concrete</option>
+          <option value="abstract">Abstract</option>
+        </select><br><br>
+        <label>Difficulty:</label>
+        <select id="difficulty">
+          <option value="easy">Easy (10x10)</option>
+          <option value="hard">Hard (20x20)</option>
+        </select><br><br>
+        <button id="start-game-btn">Start Game</button>
+    </div>
+    <div class="container">
+        <h1>Word Search Puzzle</h1>
+        <div id="top-panel">
+          <div id="word-list" class="word-list"></div>
+          <div id="timer">Time: 10:00</div>
+        </div>
+        <div id="score-panel">
+          <p>Score: <span id="score">0</span></p>
+        </div>
+        <div id="word-search-grid" class="grid"></div>
+        <button id="hint-button">Hint</button>
+        <div id="selected-word" class="selected-word"></div>
+        <div id="found-words" class="found-words">
+          <h2>Words Found</h2>
+          <ul id="found-words-list"></ul>
+        </div>
+    </div>      
+  <script src="https://webgazer.cs.brown.edu/webgazer.js"></script>
+  <script src="script.js"></script>
+</body>
+</html>

@@ -1,0 +1,74 @@
+body {
+    font-family: Arial, sans-serif;
+    text-align: center;
+    background-color: #f0f0f0;
+  }
+  
+  .container {
+    max-width: 600px;
+    margin: 50px auto;
+    padding: 20px;
+    background-color: white;
+    border-radius: 10px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  }
+  
+  h1 {
+    color: #333;
+  }
+  
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(10, 40px);
+    grid-template-rows: repeat(10, 40px);
+    gap: 5px;
+    margin: 20px auto;
+  }
+  
+  .grid div {
+    width: 40px;
+    height: 40px;
+    background-color: #ddd;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+    /* cursor: pointer; */
+  }
+  
+  .grid div.selected {
+    background-color: #6c7b8c;
+    color: white;
+  }
+
+  .grid div.highlight-box {
+    border: 3px solid #ffeb3b; /* Yellow box for highlighting */
+    box-sizing: border-box;
+    background-color: rgba(255, 235, 59, 0.3); /* Semi-transparent yellow background */
+  }
+  
+  .selected-word {
+    margin-top: 10px;
+    font-size: 20px;
+  }
+  
+  .word-list {
+    margin-top: 20px;
+    font-size: 18px;
+    color: #555;
+  }
+
+  .highlight {
+    background-color: yellow;  /* Highlights the letter */
+    color: black;
+    font-weight: bold;
+  }
+  .highlight {
+    background-color: yellow;
+    font-weight: bold;
+  }
+    
+
+/* #webgazerVideoContainer {
+    display: none !important;
+} */
