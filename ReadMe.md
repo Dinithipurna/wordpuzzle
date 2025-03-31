@@ -50,7 +50,6 @@ The backend will be live at: http://127.0.0.1:8000
 ### 3. Run the Frontend
 You can use Python’s built-in HTTP server:
 ```
-cd frontend
 python3 -m http.server 5500
 Visit http://localhost:5500 to play the game.
 ```
