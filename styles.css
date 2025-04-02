@@ -60,17 +60,26 @@ body {
     background-color: yellow;
 } 
 
-#top-panel {
-    display: flex;
-    justify-content: space-between;
-    margin-bottom: 10px;
-    font-size: 18px;
-    font-weight: bold;
-  }
-  
-  #timer {
-    color: #e53935;
-  }
+.top-panel {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 15px;
+  padding: 0 10px;
+}
+
+.timer, .score-panel {
+  font-size: 20px;
+  font-weight: bold;
+}
+
+#next-puzzle-button {
+  padding: 10px 20px;
+  font-size: 16px;
+  margin-top: 10px;
+  display: none;
+}
+
 
   .setup {
     position: absolute;

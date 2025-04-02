@@ -39,7 +39,8 @@ class GazeLog(BaseModel):
 
 class SessionEnd(BaseModel):
     score: int
-    time_taken: float  # in seconds
+    time_taken: float
+    levels_completed: int
 
 @app.post("/start-session")
 def start_session(info: SessionStart):
@@ -101,6 +102,7 @@ def end_session(end: SessionEnd):
     with open(summary_path, "w") as f:
         f.write(f"Score: {end.score}\n")
         f.write(f"Time Taken: {end.time_taken:.2f} seconds\n")
+        f.write(f"Levels Completed: {end.levels_completed}\n")
     return {"status": "session ended"}
 
 @app.post("/upload-face")

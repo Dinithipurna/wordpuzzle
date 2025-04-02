@@ -1,2 +1,0 @@
-Score: 5
-Time Taken: 47.00 seconds

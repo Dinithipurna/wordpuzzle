@@ -13,6 +13,7 @@ const scoreElement = document.getElementById('score');
 const hintButton = document.getElementById('hint-button');
 const timerElement = document.getElementById('timer');
 const foundWordsList = document.getElementById('found-words-list');
+const nextPuzzleBtn = document.getElementById('next-puzzle-button');
 
 let gridSize = 10;
 let hintType = "concrete";
@@ -25,13 +26,16 @@ let startTime = null;
 let timerInterval = null;
 let hintClickCount = 0;
 let wordPositions = {};
-let countdown = 600;
+let countdown = 300;
 let mediaRecorder;
 let recordedChunks = [];
+let readyForNext = false;
 let recordingStartTime;
+let levelCount = 0;
 
 // ✅ Start MediaRecorder for face video
 async function startFaceRecording() {
+    console.log("🎥 Face recording started");
     const stream = await navigator.mediaDevices.getUserMedia({ video: true });
     mediaRecorder = new MediaRecorder(stream);
     recordingStartTime = new Date().toISOString();
@@ -52,23 +56,33 @@ async function startFaceRecording() {
     mediaRecorder.start();
 }
 
+function stopFaceRecording() {
+    if (mediaRecorder && mediaRecorder.state !== 'inactive') {
+      mediaRecorder.stop();
+    }
+  }
+  
+
 function checkForWord(word) {
     if (words.includes(word) && !foundWords.includes(word)) {
-        alert(`${word} is found!`);
-        foundWords.push(word);
-        score++;
-        scoreElement.innerText = `Score: ${score}`;
-        updateFoundWordsList();
-        resetSelectedWord();
-
-        if (foundWords.length === words.length) {
-            stopTimer();
-            showCongratulations();
+      foundWords.push(word);
+      score++;
+      scoreElement.innerText = `${score}`;
+      updateFoundWordsList();
+      resetSelectedWord();
+  
+      if (foundWords.length === words.length) {
+        if (countdown > 0) {
+          readyForNext = true;
+          levelCount++;
+          nextPuzzleBtn.style.display = 'inline-block';
         }
+      }
     }
-}
+  }
+
 function updateFoundWordsList() {
-    foundWordsList.innerHTML = foundWords.map(word => `<li>${word}</li>`).join('');
+    foundWordsList.innerHTML = `<li>${foundWords.join(', ')}</li>`;
     const remainingWords = words.filter(word => !foundWords.includes(word));
     wordListElement.innerHTML = `Words to find: ${remainingWords.join(', ')}`;
 }
@@ -132,31 +146,59 @@ function stopFaceRecording() {
 function startTimer() {
     updateTimer();
     timerInterval = setInterval(() => {
-        countdown--;
-        updateTimer();
-        if (countdown <= 0) {
-            clearInterval(timerInterval);
-            stopFaceRecording();
-            handleTimeUp();
-        }
+      countdown--;
+      updateTimer();
+      if (countdown <= 0) {
+        clearInterval(timerInterval);
+        handleTimeUp();
+      }
     }, 1000);
-}
-
-function updateTimer() {
+  }
+  
+  function updateTimer() {
     let minutes = Math.floor(countdown / 60);
     let seconds = countdown % 60;
     timerElement.innerText = `Time: ${minutes}:${seconds < 10 ? '0' + seconds : seconds}`;
-}
-
-function handleTimeUp() {
+  }
+  
+  function handleTimeUp() {
     disableGrid();
+    nextPuzzleBtn.style.display = 'none';
     alert(`Time's up! Your score is ${score}`);
-    logGameEnd();
+    // showCongratulations();
+    // logGameEnd();
+    sendSessionSummary();
+    stopTimer();
+    stopFaceRecording();
+    
 }
 
-function stopTimer() {
+  function stopTimer() {
     clearInterval(timerInterval);
-}
+  }
+
+// function handleTimeUp() {
+//     disableGrid();
+//     alert(`Time's up! Your score is ${score}`);
+//     logGameEnd();
+// }
+
+// function stopTimer() {
+//     clearInterval(timerInterval);
+// }
+
+function sendSessionSummary() {
+    const timeTaken = (Date.now() - startTime) / 1000;
+    fetch(`${backendUrl}/end-session`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        score: score,
+        time_taken: timeTaken,
+        levels_completed: levelCount
+      })
+    }).then(res => res.json()).then(data => console.log("✅ Summary uploaded:", data));
+  }
 
 function disableGrid() {
     document.querySelectorAll('.grid div').forEach(letter => {
@@ -180,6 +222,7 @@ function canPlaceWord(word, row, col, direction, gridArray) {
     return true;
 }
 
+
 function placeWord(word, row, col, direction, gridArray) {
     if (direction === 'h') {
         for (let i = 0; i < word.length; i++) {
@@ -201,51 +244,59 @@ function placeWord(word, row, col, direction, gridArray) {
 }
 
 function generateGrid() {
-    console.log("generaating grid");
     const gridArray = Array(gridSize * gridSize).fill(null);
     const cellSize = gridSize === 10 ? 40 : 25;
     const fontSize = gridSize === 10 ? '20px' : '14px';
     const gapSize = gridSize === 10 ? '5px' : '2px';
+  
     grid.style.gridTemplateColumns = `repeat(${gridSize}, ${cellSize}px)`;
     grid.style.gridGap = gapSize;
-
+    wordPositions = {};
+    foundWords = [];
+    selectedWord = '';
+    selectedLetters = [];
+    readyForNext = false;
+    nextPuzzleBtn.style.display = 'none';
+  
     words.forEach(word => {
-        let wordPlaced = false;
-        while (!wordPlaced) {
-            const direction = Math.random() < 0.5 ? 'h' : 'v';
-            const row = Math.floor(Math.random() * gridSize);
-            const col = Math.floor(Math.random() * gridSize);
-
-            if (canPlaceWord(word, row, col, direction, gridArray)) {
-                placeWord(word, row, col, direction, gridArray);
-                wordPlaced = true;
-            }
+      let wordPlaced = false;
+      while (!wordPlaced) {
+        const direction = Math.random() < 0.5 ? 'h' : 'v';
+        const row = Math.floor(Math.random() * gridSize);
+        const col = Math.floor(Math.random() * gridSize);
+  
+        if (canPlaceWord(word, row, col, direction, gridArray)) {
+          placeWord(word, row, col, direction, gridArray);
+          wordPlaced = true;
         }
+      }
     });
-
+  
     for (let i = 0; i < gridArray.length; i++) {
-        if (!gridArray[i]) {
-            gridArray[i] = String.fromCharCode(65 + Math.floor(Math.random() * 26));
-        }
+      if (!gridArray[i]) {
+        gridArray[i] = String.fromCharCode(65 + Math.floor(Math.random() * 26));
+      }
     }
-
+  
     grid.innerHTML = '';
     gridArray.forEach((letter, index) => {
-        const div = document.createElement('div');
-        div.innerText = letter;
-        div.dataset.index = index;
-        div.addEventListener('click', handleLetterClick);
-        div.style.width = `${cellSize}px`;
-        div.style.height = `${cellSize}px`;
-        div.style.fontSize = fontSize;
-        grid.appendChild(div);
+      const div = document.createElement('div');
+      div.innerText = letter;
+      div.dataset.index = index;
+      div.addEventListener('click', handleLetterClick);
+      div.style.width = `${cellSize}px`;
+      div.style.height = `${cellSize}px`;
+      div.style.fontSize = fontSize;
+      grid.appendChild(div);
     });
-
+  
     wordListElement.innerHTML = `Words to find: ${words.join(', ')}`;
     scoreElement.innerText = `Score: ${score}`;
-    startTime = new Date();
-    startTimer();
-}
+    foundWordsList.innerHTML = '';
+    selectedWordElement.innerText = `Selected Word: `;
+
+    updateTimer();
+  }
 
 function handleLetterClick(event) {
     const letter = event.target;
@@ -280,23 +331,23 @@ function handleLetterClick(event) {
     checkForWord(selectedWord);
 }
 
-function logGameEnd() {
-    const timeTaken = Math.floor((new Date() - startTime) / 1000);
-    fetch(`${backendUrl}/end-session`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-            score: score,
-            time_taken: timeTaken
-        })
-    });
-}
+// function logGameEnd() {
+//     const timeTaken = Math.floor((new Date() - startTime) / 1000);
+//     fetch(`${backendUrl}/end-session`, {
+//         method: "POST",
+//         headers: { "Content-Type": "application/json" },
+//         body: JSON.stringify({
+//             score: score,
+//             time_taken: timeTaken
+//         })
+//     });
+// }
 
 function showCongratulations() {
     stopFaceRecording();
     let timeTaken = Math.floor((new Date() - startTime) / 1000);
     alert(`Congratulations! You found all words in ${timeTaken} seconds!`);
-    logGameEnd();
+    // logGameEnd();
 
 }
 
@@ -366,6 +417,8 @@ function showHint() {
     });
 }
 
+
+
 // ✅ Hook to backend on game start
 document.getElementById("start-game-btn").addEventListener("click", async () => {
     participantId = document.getElementById("participant-id").value.trim();
@@ -390,7 +443,15 @@ document.getElementById("start-game-btn").addEventListener("click", async () => 
     });
 
     document.getElementById("setup-screen").style.display = "none";
-    generateGrid();
-    startEyeTracking();
-    startFaceRecording();
+
+    generateGrid();          // 👈 Setup the first puzzle
+    startTimer();            // 👈 Start the countdown ONCE
+    startEyeTracking();      // 👁️
+    startFaceRecording();    // 🎥
 });
+
+nextPuzzleBtn.addEventListener('click', () => {
+    if (readyForNext && countdown > 0) {
+      generateGrid(); // regenerate grid with same words
+    }
+  });
